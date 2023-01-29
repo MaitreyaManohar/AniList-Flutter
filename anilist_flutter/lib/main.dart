@@ -1,32 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
+import 'screens/home_page/home_page.dart';
+
 void main() async {
   await initHiveForFlutter();
-  final HttpLink httpLink = HttpLink("");
-  final AuthLink authLink = AuthLink(
-    getToken: () async => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
-    // OR
-    // getToken: () => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
-  );
-
-  final Link link = authLink.concat(httpLink);
-
-  ValueNotifier<GraphQLClient> client = ValueNotifier(
+  final HttpLink httpLink = HttpLink("https://graphql.anilist.co/");
+  final ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
     GraphQLClient(
-      link: link,
-      // The default store is the InMemoryStore, which does NOT persist to disk
-      cache: GraphQLCache(store: HiveStore()),
+      link: httpLink,
+      cache: GraphQLCache(
+        store: HiveStore(),
+      ),
     ),
   );
-  runApp(const AnilistApp());
+
+  runApp(MaterialApp(
+    title: "Anilist Flutter",
+    home: HomePage(client: client),
+  ));
 }
 
-class AnilistApp extends StatelessWidget {
-  const AnilistApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
+
+
