@@ -11,9 +11,11 @@ class AnimeDashboard extends StatefulWidget {
 class _AnimeDashboardState extends State<AnimeDashboard> {
   String query = """ 
   query{
-  Page(page:2,perPage:100){
+  Page(page:1,perPage:100){
     media(sort:POPULARITY){
-      
+      coverImage{
+        medium
+      }
       title{
         english,
         native
@@ -36,9 +38,11 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                   if (value == "") {
                     query = """ 
   query{
-  Page(page:2,perPage:100){
+  Page(page:1,perPage:100){
     media(sort:POPULARITY){
-      
+      coverImage{
+        medium
+      }
       title{
         english,
         native
@@ -51,9 +55,11 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                   } else {
                     query = """ 
   query{
-  Page(page:2,perPage:100){
+  Page(page:1,perPage:100){
     media(sort:POPULARITY,search:"$value"){
-      
+      coverImage{
+        medium
+      }
       title{
         english,
         native
@@ -73,7 +79,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                 filled: true,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none),
+                    borderSide: const BorderSide(width: 20)),
                 hintText: 'Search',
                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 18),
                 prefixIcon: Container(
@@ -90,24 +96,40 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
               } else if (result.isLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else {
-                final _animeMediaList = result.data?['Page']['media'];
-                return ListView.builder(
+                final animeMediaList = result.data?['Page']['media'];
+                return GridView.builder(
+                  physics: ScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2),
                   shrinkWrap: true,
-                  itemCount: _animeMediaList.length,
+                  itemCount: animeMediaList.length,
                   itemBuilder: ((context, index) {
-                    final _animeNamesEnglish =
-                        _animeMediaList[index]['title']['english'];
-                    final _animeNamesNative =
-                        _animeMediaList[index]['title']['native'];
+                    String animeTitle;
+                    final animeNamesEnglish =
+                        animeMediaList[index]['title']['english'];
+                    final animeNamesNative =
+                        animeMediaList[index]['title']['native'];
 
-                    if (_animeNamesEnglish != null) {
-                      return Text(_animeNamesEnglish);
-                    } else if (_animeNamesNative != null) {
-                      return Text(_animeNamesNative);
+                    if (animeNamesEnglish != null) {
+                      animeTitle = animeNamesEnglish;
+                    } else if (animeNamesNative != null) {
+                      animeTitle = animeNamesNative;
                     } else {
-                      print(_animeMediaList[index]['title']);
-                      return const Text("NONE");
+                      animeTitle = "NONE";
                     }
+                    print(animeMediaList[index]);
+                    return Container(
+                      child: Column(
+                        children: [
+                          Image.network(
+                              animeMediaList[index]['coverImage']['medium']),
+                          Text(
+                            animeTitle,
+                            overflow: TextOverflow.visible,
+                          )
+                        ],
+                      ),
+                    );
                   }),
                 );
               }
