@@ -18,6 +18,7 @@ class HomePage extends StatelessWidget {
       client: client,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: const Text("AniList"),
         ),
         body: const AnimeDashboard()

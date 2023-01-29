@@ -1,3 +1,4 @@
+import 'package:anilist_flutter/screens/home_page/components/animeCard.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -13,6 +14,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
   query{
   Page(page:1,perPage:100){
     media(sort:POPULARITY){
+      isAdult
       coverImage{
         medium
       }
@@ -39,7 +41,8 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                     query = """ 
   query{
   Page(page:1,perPage:100){
-    media(sort:POPULARITY){
+    media(sort:TRENDING){
+      isAdult
       coverImage{
         medium
       }
@@ -56,7 +59,8 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                     query = """ 
   query{
   Page(page:1,perPage:100){
-    media(sort:POPULARITY,search:"$value"){
+    media(sort:TRENDING,search:"$value"){
+      isAdult
       coverImage{
         medium
       }
@@ -96,11 +100,12 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
               } else if (result.isLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else {
-                final animeMediaList = result.data?['Page']['media'];
-                return GridView.builder(
-                  physics: ScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2),
+                final List animeMediaList = result.data?['Page']['media'];
+                animeMediaList
+                    .retainWhere((element) => element['isAdult'] == false);
+                animeMediaList.removeWhere((element) => (element['title']['english']==null && element['title']['native']==null));
+                return ListView.builder(
+                  physics: const ScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: animeMediaList.length,
                   itemBuilder: ((context, index) {
@@ -117,18 +122,9 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                     } else {
                       animeTitle = "NONE";
                     }
-                    print(animeMediaList[index]);
-                    return Container(
-                      child: Column(
-                        children: [
-                          Image.network(
-                              animeMediaList[index]['coverImage']['medium']),
-                          Text(
-                            animeTitle,
-                            overflow: TextOverflow.visible,
-                          )
-                        ],
-                      ),
+                    return AnimeCard(
+                      image: animeMediaList[index]['coverImage']['medium'],
+                      title: animeTitle,
                     );
                   }),
                 );

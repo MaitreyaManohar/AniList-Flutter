@@ -1,3 +1,4 @@
+import 'package:anilist_flutter/screens/anime_details/anime_details.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -16,11 +17,8 @@ void main() async {
   );
 
   runApp(MaterialApp(
+    
     title: "Anilist Flutter",
     home: HomePage(client: client),
   ));
 }
-
-
-
-
