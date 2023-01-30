@@ -10,6 +10,7 @@ class AnimeDashboard extends StatefulWidget {
 }
 
 class _AnimeDashboardState extends State<AnimeDashboard> {
+  int page = 1;
   String query = """ 
   query{
   Page(page:1,perPage:100){
@@ -40,7 +41,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                   if (value == "") {
                     query = """ 
   query{
-  Page(page:1,perPage:100){
+  Page(page:$page,perPage:100){
     media(sort:TRENDING){
       isAdult
       coverImage{
@@ -56,9 +57,10 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
 }
   """;
                   } else {
+                    page = 1;
                     query = """ 
   query{
-  Page(page:1,perPage:100){
+  Page(page:$page,perPage:100){
     media(sort:TRENDING,search:"$value"){
       isAdult
       coverImage{
@@ -103,7 +105,9 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                 final List animeMediaList = result.data?['Page']['media'];
                 animeMediaList
                     .retainWhere((element) => element['isAdult'] == false);
-                animeMediaList.removeWhere((element) => (element['title']['english']==null && element['title']['native']==null));
+                animeMediaList.removeWhere((element) =>
+                    (element['title']['english'] == null &&
+                        element['title']['native'] == null));
                 return ListView.builder(
                   physics: const ScrollPhysics(),
                   shrinkWrap: true,

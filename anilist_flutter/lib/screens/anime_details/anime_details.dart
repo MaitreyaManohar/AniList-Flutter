@@ -38,9 +38,25 @@ class AnimeDetails extends StatelessWidget {
           body: Query(
             options: QueryOptions(document: gql(query)),
             builder: (result, {fetchMore, refetch}) {
-              print(result);
-              return Text(result.data?['Media']['coverImage']['large']);
-              
+              if(result.isLoading){
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.network(
+                    result.data?['Media']['coverImage']['large'],
+                    height: 300,
+                    fit:BoxFit.cover
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text("Click here for characters"),
+                  ),
+                ],
+              );
             },
           )),
     );
