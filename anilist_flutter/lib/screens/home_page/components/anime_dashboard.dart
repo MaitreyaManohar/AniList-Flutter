@@ -11,6 +11,41 @@ class AnimeDashboard extends StatefulWidget {
 
 class _AnimeDashboardState extends State<AnimeDashboard> {
   int page = 1;
+  final _scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    if (page < 10 &&
+        (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent)) {
+              print("HELLO");
+      setState(() {
+        query = """ 
+  query{
+  Page(page:$page,perPage:10){
+    media(sort:POPULARITY){
+      isAdult
+      coverImage{
+        medium
+      }
+      title{
+        english,
+        native
+        
+      }
+    }
+  }
+}
+  """;
+        page++;
+      });
+    }
+  }
+
   String query = """ 
   query{
   Page(page:1,perPage:100){
@@ -31,15 +66,14 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          TextField(
-            onChanged: (value) {
-              setState(
-                () {
-                  if (value == "") {
-                    query = """ 
+    return Column(
+      children: [
+        TextField(
+          onChanged: (value) {
+            setState(
+              () {
+                if (value == "") {
+                  query = """ 
   query{
   Page(page:$page,perPage:100){
     media(sort:TRENDING){
@@ -56,9 +90,9 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
   }
 }
   """;
-                  } else {
-                    page = 1;
-                    query = """ 
+                } else {
+                  page = 1;
+                  query = """ 
   query{
   Page(page:$page,perPage:100){
     media(sort:TRENDING,search:"$value"){
@@ -75,40 +109,42 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
   }
 }
   """;
-                  }
-                },
-              );
-            },
-            cursorColor: Colors.grey,
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(width: 20)),
-                hintText: 'Search',
-                hintStyle: const TextStyle(color: Colors.grey, fontSize: 18),
-                prefixIcon: Container(
-                  padding: const EdgeInsets.all(15),
-                  width: 18,
-                  child: const Icon(Icons.search),
-                )),
-          ),
-          Query(
-            options: QueryOptions(document: gql(query)),
-            builder: ((result, {fetchMore, refetch}) {
-              if (result.hasException) {
-                return Text(result.exception.toString());
-              } else if (result.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else {
-                final List animeMediaList = result.data?['Page']['media'];
-                animeMediaList
-                    .retainWhere((element) => element['isAdult'] == false);
-                animeMediaList.removeWhere((element) =>
-                    (element['title']['english'] == null &&
-                        element['title']['native'] == null));
-                return ListView.builder(
+                }
+              },
+            );
+          },
+          cursorColor: Colors.grey,
+          decoration: InputDecoration(
+              fillColor: Colors.white,
+              filled: true,
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(width: 20)),
+              hintText: 'Search',
+              hintStyle: const TextStyle(color: Colors.grey, fontSize: 18),
+              prefixIcon: Container(
+                padding: const EdgeInsets.all(15),
+                width: 18,
+                child: const Icon(Icons.search),
+              )),
+        ),
+        Query(
+          options: QueryOptions(document: gql(query)),
+          builder: ((result, {fetchMore, refetch}) {
+            if (result.hasException) {
+              return Text(result.exception.toString());
+            } else if (result.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              final List animeMediaList = result.data?['Page']['media'];
+              animeMediaList
+                  .retainWhere((element) => element['isAdult'] == false);
+              animeMediaList.removeWhere((element) =>
+                  (element['title']['english'] == null &&
+                      element['title']['native'] == null));
+              return Flexible(
+                child: ListView.builder(
+                  controller: _scrollController,
                   physics: const ScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: animeMediaList.length,
@@ -131,12 +167,12 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                       title: animeTitle,
                     );
                   }),
-                );
-              }
-            }),
-          ),
-        ],
-      ),
+                ),
+              );
+            }
+          }),
+        ),
+      ],
     );
   }
 }
