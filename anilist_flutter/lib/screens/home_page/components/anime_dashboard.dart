@@ -62,7 +62,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                   query = """ 
   query{
   Page(page:$page,perPage:100){
-    media(sort:TRENDING,search:"$value"){
+    media(search:"$value"){
       isAdult
       coverImage{
         medium

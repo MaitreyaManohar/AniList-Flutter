@@ -55,30 +55,32 @@ class CharacterDetails extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 );
               }
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Image.network(
-                      result.data?['Character']['image']['large'],
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Image.network(
+                        result.data?['Character']['image']['large'],
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  Text(result.data?['Character']['description']),
-                  Text("Gender : ${result.data?['Character']['gender']}"),
-                  Text("Age : ${result.data?['Character']['age']}"),
-                  Text(
-                      "BloodType : ${(result.data?['Character']['bloodType'] == null) ? "No data" : result.data?['Character']['bloodType']}")
-                ],
+                    Text(result.data?['Character']['description']),
+                    Text("Gender : ${result.data?['Character']['gender']}"),
+                    Text("Age : ${result.data?['Character']['age']}"),
+                    Text(
+                        "BloodType : ${(result.data?['Character']['bloodType'] == null) ? "No data" : result.data?['Character']['bloodType']}")
+                  ],
+                ),
               );
             },
           )),
