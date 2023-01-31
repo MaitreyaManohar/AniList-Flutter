@@ -43,7 +43,7 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
 
 """;
   }
-
+  bool check = false;
   @override
   Widget build(BuildContext context) {
     return GraphQLProvider(
@@ -62,20 +62,20 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
             },
           ),
           builder: (result, {fetchMore, refetch}) {
-            bool check = false;
             return NotificationListener(
               onNotification: (notification) {
                 if (notification is ScrollEndNotification &&
                     _scrollController.position.pixels ==
-                        _scrollController.position.maxScrollExtent && check == false) {
+                        _scrollController.position.maxScrollExtent &&
+                    check == false) {
                   print("hello");
                   FetchMoreOptions opts = FetchMoreOptions(
                       updateQuery: ((previousResultData, fetchMoreResultData) {
                         print(fetchMoreResultData);
                         if (fetchMoreResultData!['Media']['characters']['nodes']
                             .isEmpty) {
-                              print("YES");
-                         check= true;
+                          print("YES");
+                          check = true;
                           return previousResultData;
                         }
                         final List repos = [
