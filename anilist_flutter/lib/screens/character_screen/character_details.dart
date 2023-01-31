@@ -17,16 +17,22 @@ class CharacterDetails extends StatelessWidget {
         ),
       ),
     );
-    query = """query{
-  Media(search:"${characterName.trim()}"){
-    status
-    episodes
-    genres
-    coverImage{
+    query = """query Character(\$characterName: String!){
+  Character(search:\$characterName){
+    image{
       large
     }
+    description
+    dateOfBirth {
+      year
+      month
+      day
+    }
+    gender
+    age
+    bloodType
+    
   }
-  
 }""";
   }
 
@@ -40,7 +46,9 @@ class CharacterDetails extends StatelessWidget {
             title: Text(characterName.trim()),
           ),
           body: Query(
-            options: QueryOptions(document: gql(query)),
+            options: QueryOptions(
+                document: gql(query),
+                variables: {'characterName': characterName}),
             builder: (result, {fetchMore, refetch}) {
               if (result.isLoading) {
                 return const Center(
@@ -49,9 +57,27 @@ class CharacterDetails extends StatelessWidget {
               }
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  
+                  Center(
+                    child: Image.network(
+                      result.data?['Character']['image']['large'],
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  Text(result.data?['Character']['description']),
+                  Text("Gender : ${result.data?['Character']['gender']}"),
+                  Text("Age : ${result.data?['Character']['age']}"),
+                  Text(
+                      "BloodType : ${(result.data?['Character']['bloodType'] == null) ? "No data" : result.data?['Character']['bloodType']}")
                 ],
               );
             },

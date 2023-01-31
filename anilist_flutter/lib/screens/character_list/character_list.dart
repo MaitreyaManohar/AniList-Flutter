@@ -1,3 +1,4 @@
+import 'package:anilist_flutter/screens/character_screen/character_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -115,6 +116,13 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
                       );
                     } else {
                       return ListTile(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: ((context) => CharacterDetails(
+                                  characterName: result.data?['Media']
+                                          ['characters']['nodes'][index]['name']
+                                      ['full']))));
+                        },
                         contentPadding: const EdgeInsets.all(20),
                         leading: Image.network(
                           result.data?['Media']['characters']['nodes'][index]
