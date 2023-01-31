@@ -1,3 +1,4 @@
+import 'package:anilist_flutter/screens/character_list/character_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -18,11 +19,15 @@ class AnimeDetails extends StatelessWidget {
       ),
     );
     query = """query{
-  Media(search:"$title"){
+  Media(search:"${title.trim()}"){
+    status
+    episodes
+    genres
     coverImage{
       large
     }
   }
+  
 }""";
   }
 
@@ -33,27 +38,40 @@ class AnimeDetails extends StatelessWidget {
       child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text(title),
+            title: Text(title.trim()),
           ),
           body: Query(
             options: QueryOptions(document: gql(query)),
             builder: (result, {fetchMore, refetch}) {
-              if(result.isLoading){
+              if (result.isLoading) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
               return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.network(
-                    result.data?['Media']['coverImage']['large'],
-                    height: 300,
-                    fit:BoxFit.cover
+                  Center(
+                    child: Image.network(
+                        result.data?['Media']['coverImage']['large'],
+                        height: 300,
+                        fit: BoxFit.cover),
                   ),
+                  Text("STATUS: ${result.data?['Media']['status']}"),
+                  Text("Genres: ${result.data?['Media']['genre']}"),
+                  Text("EPISODES: ${result.data?['Media']['episodes']}"),
                   TextButton(
-                    onPressed: () {},
-                    child: const Text("Click here for characters"),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: ((context) => CharacterList(
+                                animeTitle: title
+                              )),
+                        ),
+                      );
+                    },
+                    child: const Text("Click here to view characters"),
                   ),
                 ],
               );

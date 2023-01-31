@@ -14,6 +14,7 @@ class AnimeCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
+          print(title);
           Navigator.push(
               context,
               MaterialPageRoute(

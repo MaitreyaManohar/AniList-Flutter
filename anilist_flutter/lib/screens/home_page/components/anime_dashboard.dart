@@ -12,39 +12,6 @@ class AnimeDashboard extends StatefulWidget {
 class _AnimeDashboardState extends State<AnimeDashboard> {
   int page = 1;
   final _scrollController = ScrollController();
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_scrollListener);
-  }
-
-  void _scrollListener() {
-    if (page < 10 &&
-        (_scrollController.position.pixels ==
-            _scrollController.position.maxScrollExtent)) {
-              print("HELLO");
-      setState(() {
-        query = """ 
-  query{
-  Page(page:$page,perPage:10){
-    media(sort:POPULARITY){
-      isAdult
-      coverImage{
-        medium
-      }
-      title{
-        english,
-        native
-        
-      }
-    }
-  }
-}
-  """;
-        page++;
-      });
-    }
-  }
 
   String query = """ 
   query{
@@ -128,9 +95,11 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                 child: const Icon(Icons.search),
               )),
         ),
+        
         Query(
           options: QueryOptions(document: gql(query)),
           builder: ((result, {fetchMore, refetch}) {
+            
             if (result.hasException) {
               return Text(result.exception.toString());
             } else if (result.isLoading) {
