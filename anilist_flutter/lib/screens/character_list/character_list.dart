@@ -3,23 +3,13 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
-class CharacterList extends StatefulWidget {
+class CharacterList extends StatelessWidget {
   String animeTitle = " ";
-  CharacterList({super.key, required this.animeTitle});
-
-  @override
-  State<CharacterList> createState() => _CharacterListState();
-}
-
-class _CharacterListState extends State<CharacterList> {
   String query = "";
-
-  @override
-  void initState() {
-    super.initState();
+  CharacterList({super.key, required this.animeTitle}) {
     query = """
 query{
-  Media(search:"${widget.animeTitle.trim()}"){
+  Media(search:"${animeTitle.trim()}"){
     characters {
       nodes{
         
@@ -46,7 +36,7 @@ query{
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Characters of ${widget.animeTitle}"),
+        title: Text("Characters of ${animeTitle.trim()}"),
       ),
     );
   }
