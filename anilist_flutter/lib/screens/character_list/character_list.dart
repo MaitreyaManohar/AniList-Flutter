@@ -7,7 +7,7 @@ class CharacterList extends StatelessWidget {
   String animeTitle = " ";
   String query = "";
   final _scrollController = ScrollController();
-
+  bool check = false;
   int page = 1;
   late ValueNotifier<GraphQLClient> client;
   CharacterList({super.key, required this.animeTitle}) {
@@ -43,7 +43,6 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
 
 """;
   }
-  bool check = false;
   @override
   Widget build(BuildContext context) {
     return GraphQLProvider(
@@ -62,19 +61,25 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
             },
           ),
           builder: (result, {fetchMore, refetch}) {
+            if (result.isLoading && result.data == null) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (result.data!['Media']['characters']['nodes'].isEmpty) {
+              return const Center(child: Text("No character data"));
+            }
             return NotificationListener(
               onNotification: (notification) {
                 if (notification is ScrollEndNotification &&
                     _scrollController.position.pixels ==
                         _scrollController.position.maxScrollExtent &&
-                    check == false) {
-                  print("hello");
+                    check == false &&
+                    result.data!['Media']['characters']['nodes'].length >= 10) {
                   FetchMoreOptions opts = FetchMoreOptions(
                       updateQuery: ((previousResultData, fetchMoreResultData) {
-                        print(fetchMoreResultData);
                         if (fetchMoreResultData!['Media']['characters']['nodes']
                             .isEmpty) {
-                          print("YES");
                           check = true;
                           return previousResultData;
                         }
@@ -94,10 +99,17 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
               },
               child: ListView.builder(
                   controller: _scrollController,
-                  itemCount:
-                      result.data?['Media']['characters']['nodes'].length,
+                  itemCount: (check == false &&
+                          result.data!['Media']['characters']['nodes'].length >=
+                              10)
+                      ? (result.data?['Media']['characters']['nodes'].length +
+                          1)
+                      : result.data?['Media']['characters']['nodes'].length,
                   itemBuilder: ((context, index) {
-                    if (result.isLoading) {
+                    if (index ==
+                            result
+                                .data?['Media']['characters']['nodes'].length &&
+                        check == false) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
