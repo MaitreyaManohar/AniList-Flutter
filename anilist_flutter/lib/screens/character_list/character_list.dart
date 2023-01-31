@@ -21,9 +21,9 @@ class CharacterList extends StatelessWidget {
       ),
     );
     query = """
-query{
-  Media(search:"${animeTitle.trim()}"){
-    characters(page:$page,perPage:10) {
+query ReadCharacters(\$animeTitle: String!,\$page: Int!){
+  Media(search:\$animeTitle){
+    characters(page:\$page,perPage:10) {
       nodes{
         
         name {
@@ -54,19 +54,25 @@ query{
           title: Text("Characters of ${animeTitle.trim()}"),
         ),
         body: Query(
-          options: QueryOptions(document: gql(query)),
+          options: QueryOptions(
+            document: gql(query),
+            variables: {
+              'animeTitle': animeTitle.trim(),
+              'page': page,
+            },
+          ),
           builder: (result, {fetchMore, refetch}) {
-            
             return NotificationListener(
               onNotification: (notification) {
-                if(notification is ScrollEndNotification && _scrollController.position.pixels==_scrollController.position.maxScrollExtent){
-                  
-                }
+                if (notification is ScrollEndNotification &&
+                    _scrollController.position.pixels ==
+                        _scrollController.position.maxScrollExtent) {}
                 return true;
               },
               child: ListView.builder(
                   controller: _scrollController,
-                  itemCount: result.data?['Media']['characters']['nodes'].length,
+                  itemCount:
+                      result.data?['Media']['characters']['nodes'].length,
                   itemBuilder: ((context, index) {
                     if (result.isLoading) {
                       return const Center(
