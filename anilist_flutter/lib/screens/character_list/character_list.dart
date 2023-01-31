@@ -62,11 +62,34 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
             },
           ),
           builder: (result, {fetchMore, refetch}) {
+            bool check = false;
             return NotificationListener(
               onNotification: (notification) {
                 if (notification is ScrollEndNotification &&
                     _scrollController.position.pixels ==
-                        _scrollController.position.maxScrollExtent) {}
+                        _scrollController.position.maxScrollExtent && check == false) {
+                  print("hello");
+                  FetchMoreOptions opts = FetchMoreOptions(
+                      updateQuery: ((previousResultData, fetchMoreResultData) {
+                        print(fetchMoreResultData);
+                        if (fetchMoreResultData!['Media']['characters']['nodes']
+                            .isEmpty) {
+                              print("YES");
+                         check= true;
+                          return previousResultData;
+                        }
+                        final List repos = [
+                          ...previousResultData!['Media']['characters']
+                              ['nodes'],
+                          ...fetchMoreResultData['Media']['characters']['nodes']
+                        ];
+                        fetchMoreResultData['Media']['characters']['nodes'] =
+                            repos;
+                        return fetchMoreResultData;
+                      }),
+                      variables: {'page': ++page});
+                  fetchMore!(opts);
+                }
                 return true;
               },
               child: ListView.builder(
