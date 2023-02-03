@@ -17,7 +17,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
   String query = """ 
   query AnimeDashboard(\$page: Int!){
   Page(page:\$page,perPage:10){
-    media(sort:POPULARITY,isAdult:false){
+    media(isAdult:false){
       isAdult
       coverImage{
         medium
@@ -46,7 +46,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
 
   query AnimeDashboard(\$page: Int!){
   Page(page:\$page,perPage:10){
-    media(sort:POPULARITY,isAdult:false){
+    media(isAdult:false){
       isAdult
       coverImage{
         medium
@@ -65,7 +65,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                   query = """ 
   query AnimeDashboard(\$page: Int!,\$value: String!){
   Page(page:\$page,perPage:10){
-    media(sort:POPULARITY,search:\$value,isAdult:false){
+    media(search:\$value,isAdult:false){
       isAdult
       coverImage{
         medium

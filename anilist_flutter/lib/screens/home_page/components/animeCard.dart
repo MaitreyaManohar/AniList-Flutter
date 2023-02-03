@@ -21,25 +21,33 @@ class AnimeCard extends StatelessWidget {
                         title: title.replaceAll('"', ''),
                       ))));
         },
-        child: Container(
+        child: Card(
+          margin: const EdgeInsets.all(10),
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 53, 120),
-              borderRadius: BorderRadius.circular(30)),
-          child: Column(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Image.network(image, height: 300, fit: BoxFit.contain,
-                  loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              }),
-              Text(
-                title,
-                overflow: TextOverflow.visible,
+              SizedBox(
+                width: 150,
+                child: Image.network(image, height: 200, fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                }),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    title,
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
               )
             ],
           ),

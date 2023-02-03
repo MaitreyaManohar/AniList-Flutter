@@ -1,3 +1,4 @@
+import 'package:anilist_flutter/assets/colors.dart';
 import 'package:anilist_flutter/screens/character_list/character_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -36,7 +37,9 @@ class AnimeDetails extends StatelessWidget {
     return GraphQLProvider(
       client: client,
       child: Scaffold(
+          backgroundColor: MyColors.backgroundColor,
           appBar: AppBar(
+            backgroundColor: MyColors.backgroundColor,
             centerTitle: true,
             title: Text(title.trim()),
           ),
@@ -48,32 +51,34 @@ class AnimeDetails extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 );
               }
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Image.network(
-                        result.data?['Media']['coverImage']['large'],
-                        height: 300,
-                        fit: BoxFit.cover),
-                  ),
-                  Text("STATUS: ${result.data?['Media']['status']}"),
-                  Text("Genres: ${result.data?['Media']['genre']}"),
-                  Text("EPISODES: ${result.data?['Media']['episodes']}"),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: ((context) => CharacterList(
-                                animeTitle: title
-                              )),
-                        ),
-                      );
-                    },
-                    child: const Text("Click here to view characters"),
-                  ),
-                ],
+              return Container(
+                margin: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.network(result.data?['Media']['coverImage']['large'],
+                        height: 300, fit: BoxFit.fitWidth),
+                    Text("STATUS: ${result.data?['Media']['status']}"),
+                    Text("Genres: ${result.data?['Media']['genre']}"),
+                    Text("EPISODES: ${result.data?['Media']['episodes']}"),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: ((context) =>
+                                CharacterList(animeTitle: title)),
+                          ),
+                        );
+                      },
+                      child: const Text("Click here to view characters"),
+                    ),
+                  ],
+                ),
               );
             },
           )),
