@@ -4,7 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'screens/home_page/home_page.dart';
 
-void main() async {
+Future main() async {
   await initHiveForFlutter();
   final HttpLink httpLink = HttpLink("https://graphql.anilist.co/");
   final ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(

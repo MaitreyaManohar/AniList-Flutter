@@ -18,7 +18,7 @@ class AnimeDetails extends StatelessWidget {
         ),
       ),
     );
-    query = """query{
+    query = """query {
   Media(search:"${title.trim()}"){
     status
     episodes

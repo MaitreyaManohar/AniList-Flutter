@@ -14,12 +14,11 @@ class AnimeCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          print(title);
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: ((context) => AnimeDetails(
-                        title: title,
+                        title: title.replaceAll('"', ''),
                       ))));
         },
         child: Container(
@@ -30,11 +29,14 @@ class AnimeCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Image.network(
-                image,
-                height: 300,
-                fit: BoxFit.contain,
-              ),
+              Image.network(image, height: 300, fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              }),
               Text(
                 title,
                 overflow: TextOverflow.visible,

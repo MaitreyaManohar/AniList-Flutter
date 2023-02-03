@@ -74,9 +74,12 @@ class CharacterDetails extends StatelessWidget {
                         },
                       ),
                     ),
-                    Text(result.data?['Character']['description']),
-                    Text("Gender : ${result.data?['Character']['gender']}"),
-                    Text("Age : ${result.data?['Character']['age']}"),
+                    Text(
+                        "Description: ${(result.data?['Character']['description'] == null) ? "No data " : result.data?['Character']['description']}"),
+                    Text(
+                        "Gender : ${(result.data?['Character']['gender'] == null) ? "No data" : result.data?['Character']['gender']}"),
+                    Text(
+                        "Age : ${(result.data?['Character']['age'] == null) ? "No data" : result.data?['Character']['age'] == null}"),
                     Text(
                         "BloodType : ${(result.data?['Character']['bloodType'] == null) ? "No data" : result.data?['Character']['bloodType']}")
                   ],

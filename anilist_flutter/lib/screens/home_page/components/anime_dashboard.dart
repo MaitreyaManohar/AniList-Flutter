@@ -12,11 +12,12 @@ class AnimeDashboard extends StatefulWidget {
 class _AnimeDashboardState extends State<AnimeDashboard> {
   int page = 1;
   final _scrollController = ScrollController();
-
+  final _textController = TextEditingController();
+  bool _check = false;
   String query = """ 
-  query{
-  Page(page:1,perPage:100){
-    media(sort:POPULARITY){
+  query AnimeDashboard(\$page: Int!){
+  Page(page:\$page,perPage:10){
+    media(sort:POPULARITY,isAdult:false){
       isAdult
       coverImage{
         medium
@@ -36,14 +37,16 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
     return Column(
       children: [
         TextField(
+          controller: _textController,
           onChanged: (value) {
             setState(
               () {
                 if (value == "") {
                   query = """ 
-  query{
-  Page(page:$page,perPage:100){
-    media(sort:TRENDING){
+
+  query AnimeDashboard(\$page: Int!){
+  Page(page:\$page,perPage:10){
+    media(sort:POPULARITY,isAdult:false){
       isAdult
       coverImage{
         medium
@@ -60,9 +63,9 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                 } else {
                   page = 1;
                   query = """ 
-  query{
-  Page(page:$page,perPage:100){
-    media(search:"$value"){
+  query AnimeDashboard(\$page: Int!,\$value: String!){
+  Page(page:\$page,perPage:10){
+    media(sort:POPULARITY,search:\$value,isAdult:false){
       isAdult
       coverImage{
         medium
@@ -95,47 +98,88 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                 child: const Icon(Icons.search),
               )),
         ),
-        
         Query(
-          options: QueryOptions(document: gql(query)),
+          options: QueryOptions(
+              document: gql(query),
+              variables: {'page': page, 'value': _textController.text}),
           builder: ((result, {fetchMore, refetch}) {
-            
             if (result.hasException) {
               return Text(result.exception.toString());
-            } else if (result.isLoading) {
+            } else if (result.isLoading && result.data == null) {
               return const Center(child: CircularProgressIndicator());
             } else {
-              final List animeMediaList = result.data?['Page']['media'];
-              animeMediaList
-                  .retainWhere((element) => element['isAdult'] == false);
-              animeMediaList.removeWhere((element) =>
-                  (element['title']['english'] == null &&
-                      element['title']['native'] == null));
+              // final List animeMediaList = result.data?['Page']['media'];
+              // animeMediaList
+              //     .retainWhere((element) => element['isAdult'] == false);
+              // animeMediaList.removeWhere((element) =>
+              //     (element['title']['english'] == null &&
+              //         element['title']['native'] == null));
               return Flexible(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  physics: const ScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: animeMediaList.length,
-                  itemBuilder: ((context, index) {
-                    String animeTitle;
-                    final animeNamesEnglish =
-                        animeMediaList[index]['title']['english'];
-                    final animeNamesNative =
-                        animeMediaList[index]['title']['native'];
+                child: NotificationListener(
+                  onNotification: (notification) {
+                    if (notification is ScrollEndNotification &&
+                        _scrollController.position.pixels ==
+                            _scrollController.position.maxScrollExtent &&
+                        _check == false) {
+                      FetchMoreOptions opts = FetchMoreOptions(
+                          updateQuery:
+                              (previousResultData, fetchMoreResultData) {
+                            if (fetchMoreResultData!['Page']['media'].isEmpty) {
+                              _check = true;
+                              return previousResultData;
+                            }
+                            final List repos = [
+                              ...previousResultData!['Page']['media'],
+                              ...fetchMoreResultData['Page']['media']
+                            ];
 
-                    if (animeNamesEnglish != null) {
-                      animeTitle = animeNamesEnglish;
-                    } else if (animeNamesNative != null) {
-                      animeTitle = animeNamesNative;
-                    } else {
-                      animeTitle = "NONE";
+                            fetchMoreResultData['Page']['media'] = repos;
+                            return fetchMoreResultData;
+                          },
+                          variables: {
+                            'page': ++page,
+                            'value': _textController.text
+                          });
+                      fetchMore!(opts);
                     }
-                    return AnimeCard(
-                      image: animeMediaList[index]['coverImage']['medium'],
-                      title: animeTitle,
-                    );
-                  }),
+                    return true;
+                  },
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    physics: const ScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: (_check == false &&
+                            result.data!['Page']['media'].length >= 10)
+                        ? (result.data!['Page']['media'].length + 1)
+                        : result.data!['Page']['media'].length,
+                    itemBuilder: ((context, index) {
+                       if (index ==
+                            result
+                                .data?['Page']['media'].length &&
+                        _check == false) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } 
+                      String animeTitle;
+                      final animeNamesEnglish =
+                          result.data!['Page']['media'][index]['title']['english'];
+                      final animeNamesNative =
+                          result.data!['Page']['media'][index]['title']['native'];
+
+                      if (animeNamesEnglish != null) {
+                        animeTitle = animeNamesEnglish;
+                      } else if (animeNamesNative != null) {
+                        animeTitle = animeNamesNative;
+                      } else {
+                        animeTitle = "NONE";
+                      }
+                      return AnimeCard(
+                        image: result.data!['Page']['media'][index]['coverImage']['medium'],
+                        title: animeTitle,
+                      );
+                    }),
+                  ),
                 ),
               );
             }
