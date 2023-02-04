@@ -1,3 +1,4 @@
+import 'package:anilist_flutter/assets/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -42,6 +43,7 @@ class CharacterDetails extends StatelessWidget {
       client: client,
       child: Scaffold(
           appBar: AppBar(
+            backgroundColor: MyColors.backgroundColor,
             centerTitle: true,
             title: Text(characterName.trim()),
           ),
@@ -58,7 +60,7 @@ class CharacterDetails extends StatelessWidget {
               return SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Center(
                       child: Image.network(
@@ -74,14 +76,46 @@ class CharacterDetails extends StatelessWidget {
                         },
                       ),
                     ),
-                    Text(
-                        "Description: ${(result.data?['Character']['description'] == null) ? "No data " : result.data?['Character']['description']}"),
-                    Text(
-                        "Gender : ${(result.data?['Character']['gender'] == null) ? "No data" : result.data?['Character']['gender']}"),
-                    Text(
-                        "Age : ${(result.data?['Character']['age'] == null) ? "No data" : result.data?['Character']['age'] == null}"),
-                    Text(
-                        "BloodType : ${(result.data?['Character']['bloodType'] == null) ? "No data" : result.data?['Character']['bloodType']}")
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Description",
+                            style: TextStyle(
+                                fontSize: 25, color: MyColors.labelColor),
+                          ),
+                          Text(
+                            "${(result.data?['Character']['description'] == null) ? "No data " : result.data?['Character']['description']}",
+                            style: TextStyle(color: MyColors.labelColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Gender : ${(result.data?['Character']['gender'] == null) ? "No data" : result.data?['Character']['gender']}",
+                        style:
+                            TextStyle(fontSize: 25, color: MyColors.labelColor),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Age : ${(result.data?['Character']['age'] == null) ? "No data" : result.data?['Character']['age'] == null}",
+                        style:
+                            TextStyle(fontSize: 25, color: MyColors.labelColor),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "BloodType : ${(result.data?['Character']['bloodType'] == null) ? "No data" : result.data?['Character']['bloodType']}",
+                        style:
+                            TextStyle(fontSize: 25, color: MyColors.labelColor),
+                      ),
+                    )
                   ],
                 ),
               );

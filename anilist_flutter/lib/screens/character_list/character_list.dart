@@ -1,3 +1,4 @@
+import 'package:anilist_flutter/assets/colors.dart';
 import 'package:anilist_flutter/screens/character_screen/character_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -50,6 +51,7 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
       client: client,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: MyColors.backgroundColor,
           centerTitle: true,
           title: Text("Characters of ${animeTitle.trim()}"),
         ),
@@ -115,27 +117,54 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
                         child: CircularProgressIndicator(),
                       );
                     } else {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          
-                          
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: ((context) => CharacterDetails(
-                                    characterName: result.data?['Media']
-                                            ['characters']['nodes'][index]['name']
-                                        ['full']))));
-                          },
-                          contentPadding: const EdgeInsets.all(20),
-                          leading: Image.network(
-                            result.data?['Media']['characters']['nodes'][index]
-                                ['image']['medium'],
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          title: Text(result.data?['Media']['characters']['nodes']
-                              [index]['name']['full']),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: ((context) => CharacterDetails(
+                                  characterName: result.data?['Media']
+                                          ['characters']['nodes'][index]['name']
+                                      ['full']))));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                              height: 150,
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child:
+                                  // ListTile(
+                                  //   onTap: () {
+                                  //     Navigator.of(context).push(MaterialPageRoute(
+                                  //         builder: ((context) => CharacterDetails(
+                                  //             characterName: result.data?['Media']
+                                  //                     ['characters']['nodes'][index]
+                                  //                 ['name']['full']))));
+                                  //   },
+                                  //   leading: Image.network(
+                                  //     result.data?['Media']['characters']['nodes']
+                                  //         [index]['image']['medium'],
+                                  //     fit: BoxFit.fill,
+                                  //   ),
+                                  //   title: Text(result.data?['Media']['characters']
+                                  //       ['nodes'][index]['name']['full']),
+                                  // ),
+                                  Row(
+                                children: [
+                                  Image.network(
+                                    result.data?['Media']['characters']['nodes']
+                                        [index]['image']['medium'],
+                                    fit: BoxFit.cover,
+                                    width: 150,
+                                  ),
+                                  const SizedBox(
+                                    width: 50,
+                                  ),
+                                  Text(result.data?['Media']['characters']
+                                      ['nodes'][index]['name']['full']),
+                                ],
+                              )),
                         ),
                       );
                     }
