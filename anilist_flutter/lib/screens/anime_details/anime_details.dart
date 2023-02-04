@@ -26,6 +26,9 @@ class AnimeDetails extends StatelessWidget {
   Media(search:"${title.trim()}"){
     id
     status
+    title{
+      english
+    }
     episodes
     genres
     coverImage{
@@ -131,8 +134,11 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                         return const CircularProgressIndicator();
                       }
                       if (result2.data?['Page']['recommendations'].isEmpty) {
-                        return const Center(
-                          child: Text("No recommendations available"),
+                        return Center(
+                          child: Text(
+                            "No recommendations available",
+                            style: TextStyle(color: MyColors.labelColor),
+                          ),
                         );
                       }
                       return SizedBox(
