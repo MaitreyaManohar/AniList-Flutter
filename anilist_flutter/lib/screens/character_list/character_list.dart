@@ -115,23 +115,28 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
                         child: CircularProgressIndicator(),
                       );
                     } else {
-                      return ListTile(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: ((context) => CharacterDetails(
-                                  characterName: result.data?['Media']
-                                          ['characters']['nodes'][index]['name']
-                                      ['full']))));
-                        },
-                        contentPadding: const EdgeInsets.all(20),
-                        leading: Image.network(
-                          result.data?['Media']['characters']['nodes'][index]
-                              ['image']['medium'],
-                          height: 100,
-                          fit: BoxFit.cover,
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          
+                          
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: ((context) => CharacterDetails(
+                                    characterName: result.data?['Media']
+                                            ['characters']['nodes'][index]['name']
+                                        ['full']))));
+                          },
+                          contentPadding: const EdgeInsets.all(20),
+                          leading: Image.network(
+                            result.data?['Media']['characters']['nodes'][index]
+                                ['image']['medium'],
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          title: Text(result.data?['Media']['characters']['nodes']
+                              [index]['name']['full']),
                         ),
-                        title: Text(result.data?['Media']['characters']['nodes']
-                            [index]['name']['full']),
                       );
                     }
                   })),

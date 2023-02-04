@@ -42,6 +42,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
             setState(
               () {
                 if (value == "") {
+                  print("Yess");
                   query = """ 
 
   query AnimeDashboard(\$page: Int!){
@@ -121,6 +122,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                         _scrollController.position.pixels ==
                             _scrollController.position.maxScrollExtent &&
                         _check == false) {
+                      
                       FetchMoreOptions opts = FetchMoreOptions(
                           updateQuery:
                               (previousResultData, fetchMoreResultData) {
@@ -153,19 +155,17 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                         ? (result.data!['Page']['media'].length + 1)
                         : result.data!['Page']['media'].length,
                     itemBuilder: ((context, index) {
-                       if (index ==
-                            result
-                                .data?['Page']['media'].length &&
-                        _check == false) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } 
+                      if (index == result.data?['Page']['media'].length &&
+                          _check == false) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
                       String animeTitle;
-                      final animeNamesEnglish =
-                          result.data!['Page']['media'][index]['title']['english'];
-                      final animeNamesNative =
-                          result.data!['Page']['media'][index]['title']['native'];
+                      final animeNamesEnglish = result.data!['Page']['media']
+                          [index]['title']['english'];
+                      final animeNamesNative = result.data!['Page']['media']
+                          [index]['title']['native'];
 
                       if (animeNamesEnglish != null) {
                         animeTitle = animeNamesEnglish;
@@ -175,7 +175,8 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                         animeTitle = "NONE";
                       }
                       return AnimeCard(
-                        image: result.data!['Page']['media'][index]['coverImage']['medium'],
+                        image: result.data!['Page']['media'][index]
+                            ['coverImage']['medium'],
                         title: animeTitle,
                       );
                     }),

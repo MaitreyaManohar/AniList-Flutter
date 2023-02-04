@@ -7,22 +7,30 @@ import 'screens/home_page/home_page.dart';
 
 Future main() async {
   await initHiveForFlutter();
-  final HttpLink httpLink = HttpLink("https://graphql.anilist.co/");
-  final ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
+
+  runApp(AnilistApp());
+}
+
+class AnilistApp extends StatelessWidget {
+  AnilistApp({super.key});
+
+  ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
     GraphQLClient(
-      link: httpLink,
+      link: HttpLink("https://graphql.anilist.co/"),
       cache: GraphQLCache(
         store: HiveStore(),
       ),
     ),
   );
-
-  runApp(MaterialApp(
-    theme: ThemeData(
-      scaffoldBackgroundColor: MyColors.backgroundColor,
-      fontFamily: 'Nunito'
-    ),
-    title: "Anilist Flutter",
-    home: HomePage(client: client),
-  ));
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+          scaffoldBackgroundColor: MyColors.backgroundColor,
+          textTheme: Theme.of(context).textTheme.apply(
+              bodyColor: MyColors.lisTiletextColor, fontFamily: 'Nunito')),
+      title: "Anilist Flutter",
+      home: HomePage(client: client),
+    );
+  }
 }
