@@ -96,7 +96,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                           Image.network(
                             result.data?['Media']['coverImage']['large'],
                             width: double.infinity,
-                            height: 300,
+                            height: MediaQuery.of(context).size.height / 3,
                             fit: BoxFit.fitWidth,
                           ),
                           Text("STATUS: ${result.data?['Media']['status']}"),
@@ -142,7 +142,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                         );
                       }
                       return SizedBox(
-                        height: MediaQuery.of(context).size.height - 535,
+                        height: MediaQuery.of(context).size.height / 3,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount:
@@ -177,11 +177,15 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                                         fit: BoxFit.fitWidth,
                                         width: double.infinity,
                                         height:
-                                            MediaQuery.of(context).size.height -
-                                                590,
+                                            MediaQuery.of(context).size.height /
+                                                4,
                                       ),
                                       Text(
-                                        title,
+                                        (title == null)
+                                            ? result2.data!['Page']
+                                                    ['recommendations'][index]
+                                                ['media']['title']['romaji']
+                                            : title,
                                         overflow: TextOverflow.fade,
                                         style: const TextStyle(
                                           fontSize: 14.3,
