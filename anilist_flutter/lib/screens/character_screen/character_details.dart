@@ -103,7 +103,7 @@ class CharacterDetails extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "Age : ${(result.data?['Character']['age'] == null) ? "No data" : result.data?['Character']['age'] == null}",
+                        "Age : ${(result.data?['Character']['age'] == null) ? "No data" : result.data?['Character']['age'] }",
                         style:
                             TextStyle(fontSize: 25, color: MyColors.labelColor),
                       ),
