@@ -27,7 +27,7 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
   Media(search:\$animeTitle){
     characters(page:\$page,perPage:10) {
       nodes{
-        
+        id
         name {
           
           full
@@ -121,6 +121,8 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: ((context) => CharacterDetails(
+                                 id: result.data?['Media']
+                                          ['characters']['nodes'][index]['id'],
                                   characterName: result.data?['Media']
                                           ['characters']['nodes'][index]['name']
                                       ['full']))));

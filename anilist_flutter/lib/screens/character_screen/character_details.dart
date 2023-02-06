@@ -8,7 +8,8 @@ class CharacterDetails extends StatelessWidget {
   final String characterName;
   late ValueNotifier<GraphQLClient> client;
   late String query;
-  CharacterDetails({super.key, required this.characterName}) {
+  final int id;
+  CharacterDetails({super.key, required this.characterName,required this.id}) {
     final HttpLink httpLink = HttpLink("https://graphql.anilist.co/");
     client = ValueNotifier<GraphQLClient>(
       GraphQLClient(
@@ -18,8 +19,8 @@ class CharacterDetails extends StatelessWidget {
         ),
       ),
     );
-    query = """query Character(\$characterName: String!){
-  Character(search:\$characterName){
+    query = """query Character(\$id:Int!){
+  Character(id:\$id){
     image{
       large
     }
@@ -50,7 +51,7 @@ class CharacterDetails extends StatelessWidget {
           body: Query(
             options: QueryOptions(
                 document: gql(query),
-                variables: {'characterName': characterName}),
+                variables: {'characterName': characterName,'id':id}),
             builder: (result, {fetchMore, refetch}) {
               if (result.isLoading) {
                 return const Center(

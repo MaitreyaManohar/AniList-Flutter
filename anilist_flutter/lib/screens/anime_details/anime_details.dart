@@ -10,6 +10,7 @@ class AnimeDetails extends StatelessWidget {
   final String title;
   late ValueNotifier<GraphQLClient> client;
   late String query;
+  final int id;
   late String recommendationsQuery;
   String removeAllHtmlTags(String htmlText) {
     RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
@@ -18,7 +19,7 @@ class AnimeDetails extends StatelessWidget {
   }
 
   int page = 1;
-  AnimeDetails({super.key, required this.title}) {
+  AnimeDetails({super.key, required this.title, required this.id}) {
     final HttpLink httpLink = HttpLink("https://graphql.anilist.co/");
     client = ValueNotifier<GraphQLClient>(
       GraphQLClient(
@@ -29,7 +30,7 @@ class AnimeDetails extends StatelessWidget {
       ),
     );
     query = """query {
-  Media(search:"${title.trim()}"){
+  Media(id:$id){
     id
     status
     description
@@ -50,6 +51,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
   Page(page:\$page,perPage:10){
  		recommendations(mediaRecommendationId:\$id){
   	media{
+      id
       coverImage{
         medium
       }
@@ -98,15 +100,15 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                             .collection('users')
                             .doc(FirebaseAuth.instance.currentUser!.uid);
 
-                        if (bookmarks.contains(title)) {
-                          bookmarks.remove(title);
+                        if (bookmarks.contains(id)) {
+                          bookmarks.remove(id);
                         } else {
-                          bookmarks.add(title);
+                          bookmarks.add(id);
                         }
                         await userDoc.set(
                             {'bookmarks': bookmarks}, SetOptions(merge: true));
                       },
-                      icon: Icon(bookmarks.contains(title)
+                      icon: Icon(bookmarks.contains(id)
                           ? Icons.bookmark
                           : Icons.bookmark_outline),
                     );
@@ -148,7 +150,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                               fit: BoxFit.fitWidth,
                             ),
                             Text(
-                                "Description : ${removeAllHtmlTags(result.data?['Media']['description'])}"),
+                                "Description : ${result.data?['Media']['description']}"),
                             Text("Status: ${result.data?['Media']['status']}"),
                             Text("Genres: ${result.data?['Media']['genre']}"),
                             Text(
@@ -212,8 +214,11 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                                 onTap: () {
                                   Navigator.of(context)
                                       .pushReplacement(MaterialPageRoute(
-                                    builder: (context) =>
-                                        AnimeDetails(title: title),
+                                    builder: (context) => AnimeDetails(
+                                        title: title,
+                                        id: result2.data!['Page']
+                                                ['recommendations'][index]
+                                            ['media']['id']),
                                   ));
                                 },
                                 child: SizedBox(

@@ -18,6 +18,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
   query AnimeDashboard(\$page: Int!){
   Page(page:\$page,perPage:10){
     media(isAdult:false){
+      id
       isAdult
       coverImage{
         medium
@@ -48,6 +49,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
   query AnimeDashboard(\$page: Int!){
   Page(page:\$page,perPage:10){
     media(isAdult:false){
+      id
       isAdult
       coverImage{
         medium
@@ -67,6 +69,7 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
   query AnimeDashboard(\$page: Int!,\$value: String!){
   Page(page:\$page,perPage:10){
     media(search:\$value,isAdult:false){
+      id
       isAdult
       coverImage{
         medium
@@ -174,10 +177,12 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                       } else {
                         animeTitle = "NONE";
                       }
+                      print(result.data!['Page']['media'][index]['id']);
                       return AnimeCard(
                         image: result.data!['Page']['media'][index]
                             ['coverImage']['medium'],
                         title: animeTitle,
+                        id:result.data!['Page']['media'][index]['id']
                       );
                     }),
                   ),

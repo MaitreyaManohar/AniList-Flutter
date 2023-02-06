@@ -6,7 +6,8 @@ import 'package:flutter/src/widgets/framework.dart';
 class AnimeCard extends StatelessWidget {
   final String image;
   final String title;
-  const AnimeCard({super.key, required this.image, required this.title});
+  final int id;
+  const AnimeCard({super.key, required this.image, required this.title,required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +20,7 @@ class AnimeCard extends StatelessWidget {
               MaterialPageRoute(
                   builder: ((context) => AnimeDetails(
                         title: title.replaceAll('"', ''),
+                        id: id
                       ))));
         },
         child: Card(

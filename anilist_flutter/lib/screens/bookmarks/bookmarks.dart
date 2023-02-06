@@ -22,10 +22,11 @@ class BookMarks extends StatelessWidget {
             )));
   }
 
-  final String query = """query Bookmarks(\$search : String!){
-  Media(search:\$search){
-    
+  final String query = """query Bookmarks(\$id: Int!){
+  Media(id:\$id){
+    id
     title{
+      romaji
       english
     }
     
@@ -76,11 +77,13 @@ class BookMarks extends StatelessWidget {
               .doc(FirebaseAuth.instance.currentUser!.uid)
               .snapshots(),
           builder: (context, snapshot) {
+            
             if (snapshot.hasError) {
               return const Text("Something went wrong");
             }
             if (snapshot.hasData) {
               List bookmarks = (snapshot.data!.data()!['bookmarks'] ?? []);
+              print(bookmarks);
               if (bookmarks.isEmpty) {
                 return const Center(
                   child: Text("You have no bookmarks"),
@@ -96,11 +99,13 @@ class BookMarks extends StatelessWidget {
                       }
                       return AnimeCard(
                           image: result.data?['Media']['coverImage']['medium'],
-                          title: bookmarks[index]);
+                          title: (result.data?['Media']['title']['english']==null)? result.data!['Media']['title']['romaji'] : result.data?['Media']['title']['english'],
+                          id: result.data?['Media']['id']);
                     },
                     options: lib2.QueryOptions(
-                        document: gql(query),
-                        variables: {'search': bookmarks[index]}),
+                      document: gql(query),
+                      variables: {'id': bookmarks[index]},
+                    ),
                   );
                 },
               );
