@@ -67,7 +67,6 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
     return GraphQLProvider(
       client: client,
       child: Scaffold(
-          
           backgroundColor: MyColors.backgroundColor,
           appBar: AppBar(
             backgroundColor: MyColors.backgroundColor,
@@ -84,13 +83,18 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                     return const Text("Something went wrong");
                   }
                   if (snapshot.hasData) {
+                    print(snapshot.data!.data()!['bookmarks'] == null);
+                    List bookmarks =
+                        (snapshot.data!.data()!['bookmarks'] == null)
+                            ? []
+                            : snapshot.data!.data()!['bookmarks'];
+                    print(bookmarks);
                     return IconButton(
                       onPressed: () async {
                         final userDoc = FirebaseFirestore.instance
                             .collection('users')
                             .doc(FirebaseAuth.instance.currentUser!.uid);
-                        List bookmarks =
-                            snapshot.data!.data()!['bookmarks'] ?? [];
+
                         if (bookmarks.contains(title)) {
                           bookmarks.remove(title);
                         } else {
@@ -100,7 +104,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                             {'bookmarks': bookmarks}, SetOptions(merge: true));
                       },
                       icon: Icon(
-                          snapshot.data!.data()!['bookmarks'].contains(title)
+                          bookmarks.contains(title)
                               ? Icons.bookmark
                               : Icons.bookmark_outline),
                     );
