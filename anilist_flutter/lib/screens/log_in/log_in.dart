@@ -13,7 +13,7 @@ class LogIn extends StatelessWidget {
   LogIn({super.key});
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+  final _confirmpasswordController = TextEditingController();
   ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
     GraphQLClient(
       link: HttpLink("https://graphql.anilist.co/"),
@@ -100,6 +100,7 @@ class LogIn extends StatelessWidget {
                         await FirebaseAuth.instance.signInWithEmailAndPassword(
                             email: _emailController.text.trim(),
                             password: _passwordController.text);
+                        Navigator.popUntil(context, (route) => route.isFirst);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -107,20 +108,68 @@ class LogIn extends StatelessWidget {
                             ));
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'user-not-found') {
-                          UserCredential user = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                                  email: _emailController.text.trim(),
-                                  password: _passwordController.text);
-                          final userDoc = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.user!.uid.toString());
-                          await userDoc
-                              .set({'email': _emailController.text.trim()});
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomePage(client: client),
-                              ));
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(
+                                  "You do not have an account. Do you want to create an account?"),
+                              actions: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: _confirmpasswordController,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        filled: true,
+                                        hintStyle:
+                                            TextStyle(color: Colors.grey[800]),
+                                        hintText: "Confirm password",
+                                        fillColor: Colors.white70),
+                                  ),
+                                ),
+                                TextButton(
+                                    onPressed: () async {
+                                      if (_confirmpasswordController.text !=
+                                          _passwordController.text) {
+                                        message(
+                                            context, "Passwords do not match!");
+                                        return;
+                                      }
+                                      UserCredential user = await FirebaseAuth
+                                          .instance
+                                          .createUserWithEmailAndPassword(
+                                              email:
+                                                  _emailController.text.trim(),
+                                              password:
+                                                  _passwordController.text);
+                                      final userDoc = FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(user.user!.uid.toString());
+                                      await userDoc.set({
+                                        'email': _emailController.text.trim()
+                                      });
+                                      Navigator.popUntil(
+                                          context, (route) => route.isFirst);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                HomePage(client: client),
+                                          ));
+                                    },
+                                    child: const Text("Yes")),
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("No")),
+                              ],
+                            ),
+                          );
                         }
                       }
                     },
