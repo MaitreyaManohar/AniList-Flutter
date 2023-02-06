@@ -1,9 +1,12 @@
 import 'package:anilist_flutter/assets/colors.dart';
 import 'package:anilist_flutter/screens/character_list/character_list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:graphql_flutter/graphql_flutter.dart' as lib2;
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class AnimeDetails extends StatelessWidget {
@@ -68,11 +71,47 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
             backgroundColor: MyColors.backgroundColor,
             centerTitle: true,
             title: Text(title.trim()),
+            actions: [
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("Something went wrong");
+                  }
+                  if (snapshot.hasData) {
+                    return IconButton(
+                      onPressed: () async {
+                        final userDoc = FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid);
+                        List bookmarks =
+                            snapshot.data!.data()!['bookmarks'] ?? [];
+                        if (bookmarks.contains(title)) {
+                          bookmarks.remove(title);
+                        } else {
+                          bookmarks.add(title);
+                        }
+                        await userDoc.set(
+                            {'bookmarks': bookmarks}, SetOptions(merge: true));
+                      },
+                      icon: Icon(
+                          snapshot.data!.data()!['bookmarks'].contains(title)
+                              ? Icons.bookmark
+                              : Icons.bookmark_outline),
+                    );
+                  } else {
+                    return const Text("Loading");
+                  }
+                },
+              )
+            ],
           ),
-          body: Query(
+          body: lib2.Query(
             options: QueryOptions(document: gql(query)),
             builder: (result, {fetchMore, refetch}) {
-              print(result.data?['Media']['id']);
               if (result.isLoading) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -122,7 +161,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                     "Recommendations",
                     style: TextStyle(color: MyColors.labelColor, fontSize: 20),
                   ),
-                  Query(
+                  lib2.Query(
                     options: QueryOptions(
                         document: gql(recommendationsQuery),
                         variables: {
