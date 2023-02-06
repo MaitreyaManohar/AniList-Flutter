@@ -1,4 +1,5 @@
 import 'package:anilist_flutter/assets/colors.dart';
+import 'package:anilist_flutter/components/side_bar.dart';
 import 'package:anilist_flutter/screens/character_list/character_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,6 +67,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
     return GraphQLProvider(
       client: client,
       child: Scaffold(
+          
           backgroundColor: MyColors.backgroundColor,
           appBar: AppBar(
             backgroundColor: MyColors.backgroundColor,
@@ -79,7 +81,7 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
-                    return Text("Something went wrong");
+                    return const Text("Something went wrong");
                   }
                   if (snapshot.hasData) {
                     return IconButton(

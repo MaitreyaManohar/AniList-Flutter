@@ -5,6 +5,8 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
+import '../../components/side_bar.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({
     Key? key,
@@ -18,6 +20,7 @@ class HomePage extends StatelessWidget {
     return GraphQLProvider(
       client: client,
       child: Scaffold(
+        drawer: const SideBar(),
         backgroundColor: MyColors.backgroundColor,
         appBar: AppBar(
           backgroundColor: MyColors.backgroundColor,
