@@ -2,6 +2,7 @@ import 'package:anilist_flutter/screens/home_page/home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -14,6 +15,7 @@ class LogIn extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
+  final _forgotpasswordController = TextEditingController();
   ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
     GraphQLClient(
       link: HttpLink("https://graphql.anilist.co/"),
@@ -22,11 +24,21 @@ class LogIn extends StatelessWidget {
       ),
     ),
   );
+
   void message(BuildContext context, String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(content: Text(message)),
     );
+  }
+
+  void loading(BuildContext context) {
+    //Loading Progress indicator
+    showDialog(
+        context: context,
+        builder: ((context) => const Center(
+              child: CircularProgressIndicator(),
+            )));
   }
 
   @override
@@ -87,12 +99,14 @@ class LogIn extends StatelessWidget {
                   TextButton(
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.only(top: 16.0),
                       textStyle: const TextStyle(fontSize: 20),
                     ),
                     onPressed: () async {
+                      loading(context);
                       if (!EmailValidator.validate(
                           _emailController.text.trim())) {
+                        Navigator.pop(context);
                         message(context, "Enter a valid email");
                         return;
                       }
@@ -108,6 +122,7 @@ class LogIn extends StatelessWidget {
                             ));
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'user-not-found') {
+                          Navigator.pop(context);
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
@@ -131,35 +146,122 @@ class LogIn extends StatelessWidget {
                                         fillColor: Colors.white70),
                                   ),
                                 ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                        onPressed: () async {
+                                          loading(context);
+                                          if (_confirmpasswordController.text !=
+                                              _passwordController.text) {
+                                            Navigator.pop(context);
+                                            message(context,
+                                                "Passwords do not match!");
+                                            return;
+                                          }
+                                          try {
+                                            UserCredential user = await FirebaseAuth
+                                                .instance
+                                                .createUserWithEmailAndPassword(
+                                                    email: _emailController.text
+                                                        .trim(),
+                                                    password:
+                                                        _passwordController
+                                                            .text);
+                                            final userDoc = FirebaseFirestore
+                                                .instance
+                                                .collection('users')
+                                                .doc(user.user!.uid.toString());
+                                            await userDoc.set({
+                                              'email':
+                                                  _emailController.text.trim()
+                                            });
+                                            Navigator.popUntil(context,
+                                                (route) => route.isFirst);
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      HomePage(client: client),
+                                                ));
+                                          } on FirebaseAuthException catch (e) {
+                                            Navigator.pop(context);
+                                            message(context, e.toString());
+                                          }
+                                        },
+                                        child: const Text("Yes")),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("No")),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          Navigator.pop(context);
+                          message(context, e.toString());
+                        }
+                      }
+                    },
+                    child: const Text("Login"),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.all(16.0),
+                      textStyle: const TextStyle(fontSize: 20),
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(
+                              "Please enter your email in the underlying text field"),
+                          actions: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                controller: _forgotpasswordController,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    filled: true,
+                                    hintStyle:
+                                        TextStyle(color: Colors.grey[800]),
+                                    hintText: "Confirm email",
+                                    fillColor: Colors.white70),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
                                 TextButton(
                                     onPressed: () async {
-                                      if (_confirmpasswordController.text !=
-                                          _passwordController.text) {
-                                        message(
-                                            context, "Passwords do not match!");
+                                      if (!EmailValidator.validate(
+                                          _forgotpasswordController.text)) {
+                                        message(context,
+                                            "Please enter a valid email");
                                         return;
                                       }
-                                      UserCredential user = await FirebaseAuth
-                                          .instance
-                                          .createUserWithEmailAndPassword(
-                                              email:
-                                                  _emailController.text.trim(),
-                                              password:
-                                                  _passwordController.text);
-                                      final userDoc = FirebaseFirestore.instance
-                                          .collection('users')
-                                          .doc(user.user!.uid.toString());
-                                      await userDoc.set({
-                                        'email': _emailController.text.trim()
-                                      });
-                                      Navigator.popUntil(
-                                          context, (route) => route.isFirst);
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                HomePage(client: client),
-                                          ));
+                                      try {
+                                        loading(context);
+                                        await FirebaseAuth.instance
+                                            .sendPasswordResetEmail(
+                                                email: _forgotpasswordController
+                                                    .text.trim());
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                        message(context,
+                                            "A reset password email has been sent");
+                                      } on FirebaseAuthException catch (e) {
+                                        Navigator.pop(context);
+                                        message(context, e.toString());
+                                      }
                                     },
                                     child: const Text("Yes")),
                                 TextButton(
@@ -169,11 +271,14 @@ class LogIn extends StatelessWidget {
                                     child: const Text("No")),
                               ],
                             ),
-                          );
-                        }
-                      }
+                          ],
+                        ),
+                      );
                     },
-                    child: const Text("Login"),
+                    child: const Text(
+                      "Forgot password",
+                      style: TextStyle(color: Colors.blue, fontSize: 11.1),
+                    ),
                   ),
                 ],
               ),

@@ -43,7 +43,6 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
             setState(
               () {
                 if (value == "") {
-                  print("Yess");
                   query = """ 
 
   query AnimeDashboard(\$page: Int!){
@@ -125,7 +124,6 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                         _scrollController.position.pixels ==
                             _scrollController.position.maxScrollExtent &&
                         _check == false) {
-                      
                       FetchMoreOptions opts = FetchMoreOptions(
                           updateQuery:
                               (previousResultData, fetchMoreResultData) {
@@ -177,13 +175,11 @@ class _AnimeDashboardState extends State<AnimeDashboard> {
                       } else {
                         animeTitle = "NONE";
                       }
-                      print(result.data!['Page']['media'][index]['id']);
                       return AnimeCard(
-                        image: result.data!['Page']['media'][index]
-                            ['coverImage']['medium'],
-                        title: animeTitle,
-                        id:result.data!['Page']['media'][index]['id']
-                      );
+                          image: result.data!['Page']['media'][index]
+                              ['coverImage']['medium'],
+                          title: animeTitle,
+                          id: result.data!['Page']['media'][index]['id']);
                     }),
                   ),
                 ),

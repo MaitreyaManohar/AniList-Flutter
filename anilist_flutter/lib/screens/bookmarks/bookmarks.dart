@@ -83,7 +83,6 @@ class BookMarks extends StatelessWidget {
             }
             if (snapshot.hasData) {
               List bookmarks = (snapshot.data!.data()!['bookmarks'] ?? []);
-              print(bookmarks);
               if (bookmarks.isEmpty) {
                 return const Center(
                   child: Text("You have no bookmarks"),
