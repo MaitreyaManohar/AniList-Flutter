@@ -238,15 +238,17 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                                                   .height /
                                               4,
                                         ),
-                                        Text(
-                                          (title == null)
-                                              ? result2.data!['Page']
-                                                      ['recommendations'][index]
-                                                  ['media']['title']['romaji']
-                                              : title,
-                                          overflow: TextOverflow.fade,
-                                          style: const TextStyle(
-                                            fontSize: 14.3,
+                                        Flexible(
+                                          child: Text(
+                                            (title == null)
+                                                ? result2.data!['Page']
+                                                        ['recommendations'][index]
+                                                    ['media']['title']['romaji']
+                                                : title,
+                                            overflow: TextOverflow.fade,
+                                            style: const TextStyle(
+                                              fontSize: 14.3,
+                                            ),
                                           ),
                                         ),
                                       ],

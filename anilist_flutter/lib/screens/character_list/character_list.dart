@@ -121,8 +121,8 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: ((context) => CharacterDetails(
-                                 id: result.data?['Media']
-                                          ['characters']['nodes'][index]['id'],
+                                  id: result.data?['Media']['characters']
+                                      ['nodes'][index]['id'],
                                   characterName: result.data?['Media']
                                           ['characters']['nodes'][index]['name']
                                       ['full']))));
@@ -163,8 +163,13 @@ query ReadCharacters(\$animeTitle: String!,\$page: Int!){
                                   const SizedBox(
                                     width: 50,
                                   ),
-                                  Text(result.data?['Media']['characters']
-                                      ['nodes'][index]['name']['full']),
+                                  Flexible(
+                                    child: Text(
+                                      result.data?['Media']['characters']
+                                          ['nodes'][index]['name']['full'],
+                                      softWrap: true,
+                                    ),
+                                  ),
                                 ],
                               )),
                         ),
