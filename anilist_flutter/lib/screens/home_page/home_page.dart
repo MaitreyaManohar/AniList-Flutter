@@ -2,8 +2,6 @@ import 'package:anilist_flutter/assets/colors.dart';
 import 'package:anilist_flutter/screens/home_page/components/anime_dashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../components/side_bar.dart';

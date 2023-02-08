@@ -88,12 +88,10 @@ query RecommendationsQuery(\$id: Int!,\$page: Int!){
                     return const Text("Something went wrong");
                   }
                   if (snapshot.hasData) {
-                    print(snapshot.data!.data()!['bookmarks'] == null);
                     List bookmarks =
                         (snapshot.data!.data()!['bookmarks'] == null)
                             ? []
                             : snapshot.data!.data()!['bookmarks'];
-                    print(bookmarks);
                     return IconButton(
                       onPressed: () async {
                         final userDoc = FirebaseFirestore.instance
