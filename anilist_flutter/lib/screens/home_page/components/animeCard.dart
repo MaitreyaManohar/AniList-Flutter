@@ -1,7 +1,5 @@
 import 'package:anilist_flutter/screens/anime_details/anime_details.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class AnimeCard extends StatelessWidget {
   final String image;

@@ -3,8 +3,6 @@ import 'package:anilist_flutter/screens/log_in/log_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:graphql_flutter/graphql_flutter.dart' as lib2;
 import 'package:graphql_flutter/graphql_flutter.dart';
 
