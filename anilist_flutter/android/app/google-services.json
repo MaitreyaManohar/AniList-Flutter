@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "530037648222",
+    "project_id": "anilist-flutter",
+    "storage_bucket": "anilist-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530037648222:android:1963a65259d1130dc3bdcf",
+        "android_client_info": {
+          "package_name": "com.example.anilist_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "530037648222-82hij2boa3fsg0sc0f0lqilt28prv5i7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_kJ9_vcEYvF-fMkI8J5-F5SngBmg3NpY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "530037648222-82hij2boa3fsg0sc0f0lqilt28prv5i7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
